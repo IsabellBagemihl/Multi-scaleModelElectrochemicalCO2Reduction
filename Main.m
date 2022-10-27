@@ -2,12 +2,12 @@
 clc;
 clear variables;
 close all;
-%Optimum ;
+[Opt_Model2, Opt_Model3] = Optimum ;
 
 clc;
-clear variables;
+clearvars -except Opt_Model2 Opt_Model3;
 [NPV_lim]=LinePlots_Figure2and3;
 
 clc;
-clearvars -except NPV_lim;
-contourplots(NPV_lim);
+clearvars -except Opt_Model2 Opt_Model3 NPV_lim;
+contourplots(NPV_lim, Opt_Model2, Opt_Model3);

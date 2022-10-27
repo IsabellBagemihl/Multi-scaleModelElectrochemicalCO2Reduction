@@ -29,7 +29,7 @@ function [NPV]=Finances(X,FE,CD,Ly,v,Ec,const,model)
     if model > 1
         eta.actA    = const.R*const.T/(0.5*const.F)*asinh(CD/(2*1e-7));
         eta.ohm     = CD*(L/sigma_el+Lm/sigma_m);
-        eta.tot     = abs(Ec) + eta.actA + eta.ohm + 1.23;
+         eta.tot     = 1.23 + eta.actA + E0_C2H4 + abs(Ec) + eta.ohm;
     else
         eta.tot     = Ec;
     end

@@ -22,6 +22,6 @@ CD = j0*exp(-alpha_c*(Ec-E0_C2H4)*const.F/(const.T*const.R));  %CD as f(Ec)
 
 %% Output Process scale model
 NPV = Finances(X,FE,CD,Ly,v,Ec,const,3);
-
+NPV =-1*NPV;
 end 
 

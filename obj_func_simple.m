@@ -23,6 +23,6 @@ CDhom = 500;     %Constant homogeneous consumption rate, set in the units of A m
 
 %% Output Process scale model
 NPV = Finances(X,FE,CD,Ly,v,Ec,const,2);
-
+NPV =-1*NPV;
 end 
 
