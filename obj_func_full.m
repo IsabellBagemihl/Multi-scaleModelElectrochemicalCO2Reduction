@@ -15,13 +15,12 @@ SetupBest;
 v  = x(1);
 Ec = x(2);
 
-vL = Re/dh*(vis_H2O);
 CD = j0*exp(-alpha_c*(Ec-E0_C2H4)*const.F/(const.T*const.R));  %CD as f(Ec)
 
 [X,FE,y,delP] = channelmodel_full(CD,Ly,v,vL,c_int,k,H,const.F,L,Lw,y0,por,D,L_c,a);
 
 %% Output Process scale model
-NPV = Finances(X,FE,CD,Ly,v,Ec,const,3);
+[NPV,~] = Finances(X,FE,CD,Ly,v,Ec,const,3);
 NPV =-1*NPV;
 end 
 

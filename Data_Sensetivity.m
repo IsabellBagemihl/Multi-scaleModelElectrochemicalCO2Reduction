@@ -2,42 +2,37 @@
 % This file contains the relevant data which is shared for all simulations,
 % hence physical constants, fixed dimensions, operating conditions etc.
 %% Fixed constants 
- const.F    = 96485;                    %Faraday constant, [C mol^-1]
- const.R    = 8.314;                    %Universal gas constant
- const.T    = 298.15;                   %Temperature, [K]
- const.p    = 1e5;                      %Pressure in channel [Pa]
+ const.F    = 96485;                         %Faraday constant, [C mol^-1]
+ const.R    = 8.314;                         %Universal gas constant
+ const.T    = 298.15;                           %Temperature, [K]
+ const.p    = 1e5;                           %Pressure in channel [Pa]
  
- MCO2       = 44;                       %molar mass CO2 in g/mol
- MC2H4      = 28;                       %molar mass C2H4 in g/mol
- 
- L    = 1e-3;                           %Channel height, [m] (-> Denoted as H in the manuscript)
- Lw   = 1e-2;                           %Channel width, [m] (-> Denoted as W in the manuscript)
- L_c  = 3e-6;                           %Catalyst layer thickness, [m] (-> Denoted as H_c in the manuscript)
- Ly = 0.1;                              %Channel length [m] (--> Denoted as L in the manuscript)
- Lm = 115e-6;                           %Thickness of the membrane [m](-> Denoted as H_m in the manuscript)
- dh    = 2*Lw*L/(L+Lw);                 %Hydraulic diameter https://www.engineeringtoolbox.com/hydraulic-equivalent-diameter-d_458.html
- 
- Re = 1100;                             %Reynolds number for laminar liquid flow
+ L    = 1e-3;                          %channel thickness, [m] (-> Denoted as H in the thesis)
+ Lw   = 1e-2;                          %channel width, [m] (-> Denoted as W in the thesis)
+ L_c  = 3e-6;                          %Catalyst layer thickness, [m] (-> Denoted as H_c in the thesis)
+ Ly = 0.1;
+ Re = 1100;
+ Lm = 115e-6;                           %Thickness of the membrane
  vis_H2O = 0.893e-6;                    %Dynamic viscosity (p=1bar, T = 298,15K) [m^2 s^-1]
+ dh    = 2*Lw*L/(L+Lw);                 %Hydraulic diameter https://www.engineeringtoolbox.com/hydraulic-equivalent-diameter-d_458.html
  vL = Re/dh*(vis_H2O);                  %Liquid velocity [m/s]
  
- por  = 0.7;                            %Porosity, [-]
- a    = 1e7;                            %Specific area for reaction, [m^-1]
- y0   = [const.p/(8.314*const.T) 0 0];  %Inlet concentrations [mol/m^3]
+ rnp  = 60e-9;                         %Radius nanoparticles, [m]
+ por  = 0.7;                           %Porosity, [-]
+ a    = 1e7;                           %Specific area for reaction, [m^-1]
+ y0   = [const.p/(8.314*const.T) 0 0];             %Inlet concentrations
  
- sigma_el = 5.5;                        %Electrolyte conductivity [S m^-1]
- sigma_m = 9.3;                         %Membrane conductivity [S m^-1]
+ j0 = 0.22;
+ alpha_c = 0.25;
  
- E0_C2H4 = 0.08;                        %Standard eq. potential cathode [V]
- CO2_ref = 34;                          %Reference concentration of CO2 [mol/m^3]
+ sigma_el = 5.5;                       %Electrolyte conductivity [S m^-1]
+ sigma_m = 9.3;
  
  Electrolyte = 1;                       % 1M KHCO3
  [CO2, HCO3, CO3, OH] = Concentration_Electrolyte(const, Electrolyte);
  pH = 14+log10(OH*10^(-3));
  
- %Fitted electrochemical parameters
- j0 = 0.22;
- alpha_c = 0.25;
+ E0_C2H4 = 0.08;
 %% Data structs
 % Reaction constants for carbon equilibrium reaction (Gupta)
 k = struct('f1'  , 5.93,...      Basic Diss CO2, [m^3 (mol s)^-1]
@@ -71,20 +66,11 @@ c_int = struct('CO2' , CO2,           ...
             'H2'  ,   0.0195, ...
             'CO'  ,   0.02475);
  
- % All Butler-Volmer kinetics from Kas
- BV = struct('CO', 0.33, ... Transfer coefficient alpha_CO
-             'H2', 0.33, ... Transfer coefficient alpha_H2
-             'iCO', 3.3e-4, ... Exchange current density i_CO
-             'iH2', 3.4e-6, ... Exchange current density i_H2
-             'nCO', 2, ... Amount of electrones transfered in CO2 reaction per CO2 molecule
-             'nC2H4', 6, ...
-             'nH2', 2, ... Amount of electrones transfered in H2 reaction
-             'mCO2', 2, ... Stociometric coefficient CO2
-             'ECO', 0.11,... 
-             'CO2ref', 34); %Reference concentration
+ 
+ %% Calculations
+ dh    = 2*Lw*L/(L+Lw);                %Hydraulic diameter https://www.engineeringtoolbox.com/hydraulic-equivalent-diameter-d_458.html
 
-
-%% Function for electrolyte concentration
+ %% Function for electrolyte concentration
  function [CO2, HCO3, CO3, OH] = Concentration_Electrolyte(const, Electrolyte)
  
 hg = -0.0172-0.000338*(298-298.15);

@@ -22,7 +22,7 @@ CDhom = 500;     %Constant homogeneous consumption rate, set in the units of A m
 [X,FE,delP] = channelmodel_simp(Ly,v, const.F,y0,CD,CDhom,L);
 
 %% Output Process scale model
-NPV = Finances(X,FE,CD,Ly,v,Ec,const,2);
+[NPV,~] = Finances(X,FE,CD,Ly,v,Ec,const,2);
 NPV =-1*NPV;
 end 
 

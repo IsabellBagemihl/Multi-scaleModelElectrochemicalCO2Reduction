@@ -16,7 +16,7 @@ diff = 0;
 
 CD_1 = 10;
 n = 0;
-[NPV_old]=Finances(X,FE,CD_1,Ly,v,V_cell,const,1);
+[NPV_old,~]=Finances(X,FE,CD_1,Ly,v,V_cell,const,1);
 while diff < 0.999
 %Model 1
     CD_1 =CD_1 + 100;
@@ -25,7 +25,7 @@ while diff < 0.999
     FE = 0.7;
     V_cell = 3.69;
 
-    [NPV_new]=Finances(X,FE,CD_1,Ly,v,V_cell,const,1);
+    [NPV_new,~] = Finances(X,FE,CD_1,Ly,v,V_cell,const,1);
     diff = NPV_new/NPV_old;
     NPV_old = NPV_new;
     n = n+1;
@@ -34,7 +34,7 @@ while diff < 0.999
 end
 NPV_lim = NPV_old;
 figure(1);
-plot(Array_CD/10, 10^7*Array_NPV);
+plot(Array_CD/10, 10^(-6)*Array_NPV);
 xlabel('Current density [mA/cm2]');
 ylabel('NPV [M$]');
 
@@ -46,20 +46,20 @@ j = j0*exp(-alpha_c.*(Ec-E0_C2H4)*const.F/(const.T*const.R));
 for i = 1:length(j)
     CD = j(i);
     %Model 3 
-%     [X,FE] = channelmodel_full(CD,Ly,v,vL,c_int,k,H,const.F,L,Lw,y0,por,D,L_c,a);
-% 
-%     NPV = Finances(X,FE,CD,Ly,v,Ec(i),const,3);
-% 
-%     Model3.Xhom_CD(i) = X.hom;
-%     Model3.Xhet_CD(i) = X.het; 
-%     Model3.NPV_CD(i)  = NPV;
-%     Model3.FE_CD(i)   = FE;
+%       [X,FE] = channelmodel_full(CD,Ly,v,vL,c_int,k,H,const.F,L,Lw,y0,por,D,L_c,a);
+%   
+%       [NPV,~] = Finances(X,FE,CD,Ly,v,Ec(i),const,3);
+%   
+%       Model3.Xhom_CD(i) = X.hom;
+%       Model3.Xhet_CD(i) = X.het; 
+%       Model3.NPV_CD(i)  = NPV;
+%       Model3.FE_CD(i)   = FE;
 
     %Model 2 
     CDhom = 500;                %Fixed loss current denisty of 50 mA/cm^2 here in A/m^2
     [X,FE] = channelmodel_simp(Ly,v, const.F,y0,CD,CDhom,L);
 
-    NPV = Finances(X,FE,CD,Ly,v,Ec(i),const,2);
+    [NPV,~] = Finances(X,FE,CD,Ly,v,Ec(i),const,2);
 
     Model2.Xhom_CD(i) = X.hom;
     Model2.Xhet_CD(i) = X.het; 
@@ -72,7 +72,7 @@ for i = 1:length(j)
     FE = 0.7;
     V_cell = 3.69;
 
-    [NPV]=Finances(X,FE,CD,Ly,v,V_cell,const,1);
+    [NPV,~]=Finances(X,FE,CD,Ly,v,V_cell,const,1);
 
     Model1.Xhom_CD(i) = X.hom;
     Model1.Xhet_CD(i) = X.het; 
@@ -90,25 +90,25 @@ CD = 1000;
 Ec = -const.T*const.R/(alpha_c*const.F)*log(CD/j0)+E0_C2H4;
 
 for i = 1:length(vg)
-    v = vg(i);
-    
-    %Full channel model (M3)
-    
+     v = vg(i);
+     
+     %Full channel model (M3)
+     
 %     [X,FE] = channelmodel_full(CD,Ly,v,vL,c_int,k,H,const.F,L,Lw,y0,por,D,L_c,a);
-%  
-%     NPV = Finances(X,FE,CD,Ly,v,Ec,const,3);
-%  
+% 
+%     [NPV,~] = Finances(X,FE,CD,Ly,v,Ec,const,3);
+% 
 %     Model3.Xhom_v(i) = X.hom;
 %     Model3.Xhet_v(i) = X.het; 
 %     Model3.NPV_v(i)  = NPV;
 %     Model3.FE_v(i)   = FE;
-    
+
     %Simplistic channel model (M2)
     CDhom = 500; %Fixed loss current denisty of 50 mA/cm^2 here in A/m^2
     
     [X,FE] = channelmodel_simp(Ly,v, const.F,y0,CD,CDhom,L);
 
-    NPV = Finances(X,FE,CD,Ly,v,Ec,const,2);
+    [NPV,~] = Finances(X,FE,CD,Ly,v,Ec,const,2);
 
     Model2.Xhom_v(i) = X.hom;
     Model2.Xhet_v(i) = X.het; 
@@ -121,7 +121,7 @@ for i = 1:length(vg)
     FE = 0.7;
     V_cell = 3.69;
     
-    NPV = Finances(X,FE,CD,Ly,v,V_cell,const,1);
+    [NPV,~] = Finances(X,FE,CD,Ly,v,V_cell,const,1);
 
     Model1.Xhom_v(i) = X.hom;
     Model1.Xhet_v(i) = X.het; 
@@ -130,7 +130,7 @@ for i = 1:length(vg)
 end 
 
 plots(Model1, Model2, Model3,j,vg,NPV_lim);
-save('Line_Model3.mat','Model3');
+save('Line1_Model3.mat','Model3');
 end
 
 %% Plotting
@@ -148,6 +148,7 @@ function plots(Model1, Model2, Model3,j,vg,NPV_lim)
     plot(j*0.1,NPV_lim./Model3.NPV_CD,'color','#41D25A','LineWidth',.5);
     hold off;
     xlim([50 250]);
+    ylim([0.3 1.1]);
     xlabel('Current density [mA cm^{-2}]')
     ylabel('NPV_lim/NPV')
     pbaspect([1 1 1])
@@ -162,6 +163,7 @@ function plots(Model1, Model2, Model3,j,vg,NPV_lim)
     hold off;
     xlabel('Gas flow rate [sccm min^{-1}]')
     ylabel('NPV_lim/NPV')
+    ylim([0.3 1.1]);
     pbaspect([1 1 1])
     annotation('textbox', [0.075, 0.97, 0, 0], 'string', 'a)')
     annotation('textbox', [0.075, 0.5, 0, 0], 'string', 'b)')
@@ -180,6 +182,7 @@ function plots(Model1, Model2, Model3,j,vg,NPV_lim)
     xlim([50 250]);
     xlabel('Current density [mA cm^{-2}]')
     ylabel('FE [-]')
+    ylim([0.3 1.1]);
     pbaspect([1 1 1])
     legend({'Model 1','Model 2','Model 3'},'Location','northeast');
     

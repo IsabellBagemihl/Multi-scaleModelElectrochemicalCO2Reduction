@@ -1,4 +1,4 @@
-function [NPV]=Finances(X,FE,CD,Ly,v,Ec,const,model)
+function [NPV,Vcell,A_r,P_r,V_dot_r,m_dot_CO2]=Finances(X,FE,CD,Ly,v,Ec,const,model)
     Data;
     SetupBest;
     
@@ -19,7 +19,7 @@ function [NPV]=Finances(X,FE,CD,Ly,v,Ec,const,model)
                         /hours_day/minutes_hour/seconds_minute;         %Daily production target in moles C2H4 per day
     A_r                 = F_dot_C2H4_target*12*const.F/(CD*FE);         %Electrolyzer area in m^2
     V_dot_r             = F_dot_C2H4_target*2/X.het/y0(1);              %Total flowrate through electrolyzer in m^3 per second
-    m_dot_CO2           = (MCO2/MC2H4*2 + X.hom/X.het)*ProdRate*optime; %Annual CO2 consumption in kg per year
+    m_dot_CO2           = (1 + X.hom/X.het)*MCO2/MC2H4*2*ProdRate*optime; %Annual CO2 consumption in kg per year
     
     %Sanity check
     n       = A_r/(Lw*Ly);                   %Channel number
@@ -29,9 +29,11 @@ function [NPV]=Finances(X,FE,CD,Ly,v,Ec,const,model)
     if model > 1
         eta.actA    = const.R*const.T/(0.5*const.F)*asinh(CD/(2*1e-7));
         eta.ohm     = CD*(L/sigma_el+Lm/sigma_m);
-         eta.tot     = 1.23 + eta.actA + E0_C2H4 + abs(Ec) + eta.ohm;
+        eta.tot     = 1.23 + eta.actA + E0_C2H4 + abs(Ec) + eta.ohm;
+        Vcell = eta.tot;
     else
         eta.tot     = Ec;
+        Vcell = eta.tot;
     end
 
     P_r     = A_r*CD*eta.tot;               %Power consumption in Watt

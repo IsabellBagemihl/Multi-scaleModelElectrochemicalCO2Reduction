@@ -2,17 +2,20 @@ function [Model2, Model3] = Optimum
 %% Get parameters from Data.m
     SetupBest;
     Data;
-%% Optimization Solver    
-    options = optimoptions('fmincon','UseParallel',true,'Display','iter','Algorithm','sqp','StepTolerance',1e-20);
-    
-    % Full channel model M3
-    guess_f  = [0.0208 -0.784];            %Initial guess, [v and Ec]
+%% Optimization Solver
+    %options = optimset('PlotFcns',@optimplotfval,'MaxIter', 30);
+    options = optimset('PlotFcns',@optimplotfval);
+%     guess_f  = [0.03 -0.8];
+%     [Model3(1,:)] = fminsearch(@(x) obj_func_full(x),guess_f,options);
+%     Model3(1,3)     = j0*exp(-alpha_c*(Model3(1,2)-E0_C2H4)*const.F/(const.T*const.R));
+%     [X,FE,y,delP]   = channelmodel_full(Model3(1,3),Ly,Model3(1,1),vL,c_int,k,H,const.F,L,Lw,y0,por,D,L_c,a);
+%     Model3(1,4)     = X.het;
+%     Model3(1,5)     = X.hom;
+%     Model3(1,6)     = FE;
+%     [Model3(1,7),Model3(1,8),Model3(1,9),Model3(1,10),Model3(1,11),Model3(1,12)]=Finances(X,FE,Model3(1,3),Ly,Model3(1,1),Model3(1,2),const,3);
+% 
+%     save('Optimum_Model3.mat','Model3');
 
-    [Model3(1,:)]   = fmincon(@(x) obj_func_full(x), guess_f(1,:), [],[],[],[],[0.01, -0.85], [10, -0.7],[],options);
-    Model3(1,3)     = j0*exp(-alpha_c*(Model3(1,2)-E0_C2H4)*const.F/(const.T*const.R));
-    [X,FE,y,delP]   = channelmodel_full(Model3(1,3),Ly,Model3(1,1),vL,c_int,k,H,const.F,L,Lw,y0,por,D,L_c,a);
-    Model3(1,4)     = X.het;
-    
     % Simplistic channel model M2
     guess_s = [0.01 -0.9];             %Initial guess, [v and Ec]
     CDhom   = 500;                      %Fixed loss current denisty of 50 mA/cm^2 here in A/m^2
@@ -21,8 +24,10 @@ function [Model2, Model3] = Optimum
     Model2(1,3)     = j0*exp(-alpha_c*(Model2(1,2)-E0_C2H4)*const.F/(const.T*const.R));
     [X,FE,delP]     = channelmodel_simp(Ly,Model2(1,1), const.F,y0,Model2(1,3),CDhom,L);
     Model2(1,4)     = X.het;
+    Model2(1,5)     = X.hom;
+    Model2(1,6)     = FE;
+    [Model2(1,7),Model2(1,8),Model2(1,9),Model2(1,10),Model2(1,11),Model2(1,12)]=Finances(X,FE,Model2(1,3),Ly,Model2(1,1),Model2(1,2),const,2);
     
-    save('Optimum_Model3.mat','Model3');
 %% Literature values
     Jouny = [250 0.5];
     Verma = [200 0.5];

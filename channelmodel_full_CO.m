@@ -1,6 +1,7 @@
 function [X,FE,y,delP] = channelmodel_full(CD,Ly,v,vL,c_int,k,H,F,L,Lw,y0,por,D,L_c,a)
+%global CO2
 %% Flowchannel-CatalystLayer-BoundaryLayer
-% This file shows a running example of the full channel model (M3).
+% This file shows a running example of channel model. 
 % In this model, the flowchannel and the catalyst layer are explicitly
 % modeled, whereas the boundary layer evolving in the liquid electrolyte is
 % inferred from emperical correlations, depending on the flowregime. A
@@ -58,7 +59,7 @@ pH     = -log10(10^-11./solval(3,:));
 %Get reaction rates and calculate transfer to/from gas phase
 n = get_reacrate(sol,k,L_c,por,CD);
 n.trans.CO2 = n.hom + n.het.CO2;
-n.trans.C2H4 = n.het.CO2*0.5;
+n.trans.C2H4 = n.het.CO2;
 n.trans.H2 = n.het.H2;
 %% Subfunctions 
 
@@ -68,7 +69,7 @@ function dcdx = cat(x,c,region,D,k,a,F,cd)
 switch region %Diff-RX in catalyst layer
     case 1
 dcdx = [c(2) 
-(cd/F*c(1)/(34*6)   + k.f1*c(1)*c(3) - k.r1*c(5))/(D.CO2*por^1.5)  
+(cd/F*c(1)/(34*2)   + k.f1*c(1)*c(3) - k.r1*c(5))/(D.CO2*por^1.5)  
 c(4) 
 (k.f1*c(1)*c(3) - k.r1*c(5) + k.f2*c(5)*c(3) - k.r2*c(7)  - cd/(F))/(D.OH*por^1.5) 
 c(6)
@@ -129,7 +130,7 @@ end
 
 %Get heterogeneours reaction rate 
 CO2m = mean(ysub(1,1:loc));
-n.het.CO2 = CD*CO2m/(34*6*F);
+n.het.CO2 = CD*CO2m/(34*2*F);
 n.het.H2  = CD*(34-CO2m)/(34*2*F);
 end 
 
@@ -141,7 +142,7 @@ function dfdy = jac(x,c,region)
 switch region 
 case 1 
     dfdy = [0                                 1 0                               0 0                         0 0            0
-            (cd/(F*34*6)- k.f1*c(3))/(D.CO2*por^1.5)  0 k.f1*c(1)/(D.CO2*por^1.5)                0 k.r1/(D.CO2*por^1.5)                0 0            0
+            (cd/(F*34*2)- k.f1*c(3))/(D.CO2*por^1.5)  0 k.f1*c(1)/(D.CO2*por^1.5)                0 k.r1/(D.CO2*por^1.5)                0 0            0
             0                                 0 0                               1 0                         0 0            0
             k.f1*c(3)/(D.OH*por^1.5)                   0 (k.f1*c(1)+ k.f2*c(5))/(D.OH*por^1.5)     0 (k.f2*c(3)-k.r1)/(D.OH*por^1.5)     0 -k.r2/(D.OH*por^1.5)   0
             0                                 0 0                               0 0                         1 0            0
@@ -260,9 +261,9 @@ end
 
 %Calculate performance metrics 
 X.tot = (y.CO2(1) - y.CO2(end))/y.CO2(1);
-X.het = (y.C2H4(end)*2)/y.CO2(1);
+X.het = (y.C2H4(end))/y.CO2(1);
 X.hom = X.tot - X.het;
-FE = y.C2H4(end)*12*v*F*L/(CD*Ly);   
+FE = y.C2H4(end)*2*v*F*L/(CD*Ly);   
 
 %Calculate pressure drop and flow regime
 dh    = 2*Lw*L/(L+Lw); 
